@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>SDN Hub starter kit</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/web/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/web/css/pure-min-0.5.0.css">
+    <link rel="stylesheet" href="/web/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/web/css/pure-custom.css">
+    <link rel="stylesheet" href="/web/css/joint.all.min.css">
+  </head>
+
+  <body>
+
+  <div class="header">
+      <div id="menu">
+      <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal pure-menu-fixed">
+          <!-- <img src="/web/img/logo.png" style="height:50px;float:left;width:180px;"> -->
+          <img src="/web/img/logo.png" style="height:40px;vertical-align:middle;">
+          <a class="pure-menu-heading" href="">同悦 SDN Starter Kit</a>
+          <!-- <div id="red"></div> -->
+      </div>
+  </div>
+  </div>
+
+  <div id="layout">
+  <div id="menu">
+      <div class="pure-menu pure-menu-open">
+          <ul>
+              <li class=" ">
+                  <a href="/web/index.html">Traffic
+                  <i class="fa fa-check-square-o"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/topo.html">Topology
+                  <i class="fa fa-home"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/stats.html">Statistics
+                  <i class="fa fa-bar-chart-o"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/tap.html">Manage Tap
+                  <i class="fa fa-edit"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/loadbalancer.html">Load balancer
+                  <i class="fa fa-sitemap"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/firewall.html">Fire Wall
+                  <i class="fa fa-fire"></i></a>
+              </li>
+              <li class="menu-item-divided pure-menu-selected">
+                  <a href="/web/security.html">Security
+                  <i class="fa fa-umbrella"></i></a>
+              </li>
+              
+          </ul>
+      </div>
+ </div>
+
+ <div id="main">
+      <!-- <h2>Security</h2> -->
+      <div class="container-fluid">
+        <div class="row">  
+          <div class="well">
+            <div class="row">
+              <!-- <div class="col-md-12"> -->
+                <div class="col-md-4">
+                  <label class="col-md-2" style="margin-top:0;">DPID</label>
+                  <select id="dpid" class="col-md-9" onchange="get_security_info()"></select>
+                </div>
+                <label class="col-md-3">
+                  <input type="checkbox"> Cloud Network Support (VXLAN)
+                </label>
+                <div class="col-md-2"> 
+                  <button type="button" class="btn btn-default" onclick="security_start()">Start</button>
+                  <button type="button" class="btn btn-danger" onclick="security_stop()">Stop</button>
+                </div>
+              <!-- </div> -->
+            </div>
+          </div>
+        </div>  
+        <div class="row">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                  <h3 class="panel-title pull-left" style="padding-top: 7.5px;">
+                    <span class="glyphicon glyphicon-stats"></span>
+                    TCP SYC Flood
+                  </h3>
+                  <div class="btn-group pull-right">
+                    <a href="#" class="btn btn-default btn-sm" onclick="security_handle('tcp','protect')">Protect</a>
+                    <a href="#" class="btn btn-default btn-sm" onclick="security_handle('tcp','clear')"">Clear</a>
+                  </div>
+                </div>
+                <div class="panel-body" id="tcp_chart_panel">
+                  <div id="tcp_chart"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                  <h3 class="panel-title pull-left" style="padding-top: 7.5px;">
+                    <span class="glyphicon glyphicon-stats"></span>
+                    HTTP Flood
+                  </h3>
+                  <div class="btn-group pull-right">
+                    <a href="#" class="btn btn-default btn-sm" onclick="security_handle('http','protect')">Protect</a>
+                    <a href="#" class="btn btn-default btn-sm" onclick="security_handle('http','clear')">Clear</a>
+                  </div>
+                </div>
+                <div class="panel-body">
+                  <div id="http_chart"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                  <h3 class="panel-title pull-left" style="padding-top: 7.5px;">
+                    <span class="glyphicon glyphicon-stats"></span>
+                    UDP/TCP
+                  </h3>
+                  <div class="btn-group pull-right">
+                    <a href="#" class="btn btn-default btn-sm" onclick="security_handle('udp_tcp','protect')">Protect</a>
+                    <a href="#" class="btn btn-default btn-sm" onclick="security_handle('udp_tcp','clear')">Clear</a>
+                  </div>
+                </div>
+                <div class="panel-body">
+                  <div id="udp_chart"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                  <h3 class="panel-title pull-left" style="padding-top: 7.5px;">
+                    <span class="glyphicon glyphicon-stats"></span>
+                    ICMP
+                  </h3>
+                  <div class="btn-group pull-right">
+                    <a href="#" class="btn btn-default btn-sm" onclick="security_handle('icmp','protect')">Protect</a>
+                    <a href="#" class="btn btn-default btn-sm" onclick="security_handle('icmp','clear')">Clear</a>
+                  </div>
+                </div>
+                <div class="panel-body">
+                  <div id="icmp_chart"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                  <h3 class="panel-title pull-left" style="padding-top: 7.5px;">
+                    <span class="glyphicon glyphicon-stats"></span>
+                    DNS Query Flood
+                  </h3>
+                  <div class="btn-group pull-right">
+                    <a href="#" class="btn btn-default btn-sm" onclick="security_handle('dns','protect')">Protect</a>
+                    <a href="#" class="btn btn-default btn-sm" onclick="security_handle('dns','clear')">Clear</a>
+                  </div>
+                </div>
+                <div class="panel-body">
+                  <div id="dns_chart"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                  <h3 class="panel-title pull-left" style="padding-top: 7.5px;">
+                    <span class="glyphicon glyphicon-stats"></span>
+                    NTP Attack
+                  </h3>
+                  <div class="btn-group pull-right">
+                    <a href="#" class="btn btn-default btn-sm" onclick="security_handle('ntp','protect')">Protect</a>
+                    <a href="#" class="btn btn-default btn-sm" onclick="security_handle('ntp','clear')">Clear</a>
+                  </div>
+                </div>
+                <div class="panel-body">
+                  <div id="ntp_chart"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div><!-- main -->
+</div><!--layout-->
+
+  <div class="footer">
+	  <!-- <p class="legal-copyright">
+	  © 2014 SDN Hub. All rights reserved.
+	  </p> -->
+  </div>
+
+    <!-- Placed at the end of the document so the pages load faster -->
+      <script src="/web/js/jquery.min.js"></script>
+      <script src="/web/js/bootstrap.min.js"></script>
+      <script src="/web/js/highcharts.js"></script>
+      <script src="/web/js/utils.js"></script>
+      <script src="/web/js/security.js"></script>
+  </body>
+</html>

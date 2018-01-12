@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>SDN Hub starter kit</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/web/css/pure-min-0.5.0.css">
+    <link rel="stylesheet" href="/web/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/web/css/pure-custom.css">
+    <link rel="stylesheet" href="/web/css/joint.all.min.css">
+  </head>
+
+  <body>
+
+  <div class="header">
+      <div id="menu">
+      <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal pure-menu-fixed">
+          <!-- <img src="/web/img/logo.png" style="height:50px;float:left;width:180px;"> -->
+          <img src="/web/img/logo.png" style="height:40px;vertical-align:middle;">
+          <a class="pure-menu-heading" href="">同悦 SDN Starter Kit</a>
+          <!-- <div id="red"></div> -->
+      </div>
+  </div>
+  </div>
+
+  <div id="layout">
+  <div id="menu">
+      <div class="pure-menu pure-menu-open">
+          <ul>
+              <li class=" ">
+                  <a href="/web/index.html">Topology
+                  <i class="fa fa-home"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/stats.html">Statistics
+                  <i class="fa fa-bar-chart-o"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/tap.html">Manage Tap
+                  <i class="fa fa-edit"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/loadbalancer.html">Load balancer
+                  <i class="fa fa-sitemap"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/firewall.html">Fire Wall
+                  <i class="fa fa-fire"></i></a>
+              </li>
+              <li class="menu-item-divided pure-menu-selected">
+                  <a href="/web/traffic.html">Traffic
+                  <i class="fa fa-check-square-o"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/new_traffic.html">New Traffic
+                  <i class="fa fa-check-square-o"></i></a>
+              </li>
+          </ul>
+      </div>
+  </div>
+
+ <div id="main">
+        <!-- <h2>Traffic</h2> -->
+        <!-- <p>Following form allows configuring a stateless tap, i.e., once
+        you create the tap, you cannot track or delete that specific
+        tap. However, you can use the Set and Clear to achieve that effect.
+        Performing a "Clear" operation without specifying any field
+        values will remove all previously created Taps.
+        For this edition of the tap, the source and sink need to be on
+        the same switch.</p> -->
+        <!-- <hr /> -->
+        <div id="row-1" style="overflow:hidden;">
+          <div class="frame" id="os-info" style="float:left;">
+            <div class="frame-row">
+              <label style="float:left;margin-bottom:10px;margin-right:10px;">PicOS Informations: </label>
+            </div>
+            
+            <div class="frame-row">
+              <label>DPID</label>
+              <select id="row-1-dpid" style="width:12em;" onchange="update_sw_info()">
+                <option></option>
+              </select>
+              
+              <!-- <select id="row-1-dpid" style="width:12em;" onchange="updatePorts()"></select> -->
+            </div>
+          
+            <div class="frame-row">
+              <div style="float:left;">
+                <div class="info-row">
+                  <label class="info-row-item">Model:</label>
+                  <p id="sw_model" class="info-row-item"></p>
+                </div>
+                
+                <div class="info-row">
+                  <label class="info-row-item">Version:</label>
+                  <p id="sw_ver" class="info-row-item"></p>
+                </div> 
+                <div class="info-row">
+                  <label class="info-row-item">Flow:</label>
+                  <div class="info-row-item">
+                    
+                    <div style="overflow:hidden;">
+                      <label style="float:left;margin-bottom:10px;margin-right:10px;">Used:</label>
+                      <p style="float:left;margin-top:0;"></p>
+                    </div>
+
+                    <div style="overflow:hidden;">
+                      <label style="float:left;margin-bottom:10px;margin-right:10px;">Free:</label>
+                      <p style="float:left;margin-top:0;"></p>
+                    </div>
+
+                  </div>  
+                </div> 
+              </div>
+            </div>
+          </div>
+
+          <div id="flow-chart" style="float:left;margin-right:40px"></div>
+
+          <div class="frame" id="sys-info" style="float:left;">
+            <div style="float:left;">
+              <div class="frame-row">
+                <label style="float:left;margin-bottom:10px;margin-right:10px;">System Informations: </label>
+              </div>
+            
+              <div class="frame-row">
+                <div style="float:left;">
+                  <div class="info-row">
+                    <label class="info-row-item">IP:</label>
+                    <p id='ctr_ip' class="info-row-item"></p>
+                  </div>
+
+                  <div class="info-row">
+                    <label class="info-row-item">CPU:</label>
+                    <p id='ctr_cpu' class="info-row-item"></p>
+                  </div>
+                  
+                  <div class="info-row">
+                    <label class="info-row-item">Disk:</label>
+                    <p id='ctr_disk' class="info-row-item"></p>
+                  </div> 
+
+                  <div class="info-row">
+                    <label class="info-row-item">Memory:</label>
+                    <p id='ctr_mem' class="info-row-item"></p>
+                  </div> 
+                  
+                </div>    
+              </div>
+            </div>
+            <div id='cpu-chart' style="float:left;"></div>
+            <div id='disk-chart' style="float:left;"></div>
+            <div id='memory-chart' style="float:left;"></div>
+          </div>
+        </div>
+        <div id="row-2">
+          <div>
+            <label style="margin:10px;margin-right:0;">DPID</label>
+            <select id="row-2-dpid" style="width:12em;margin:10px;margin-right:0;" onchange="updata_sw_traffic()">
+              <option></option>
+            </select>
+            
+            <!-- <select id="row-2-dpid" style="width:12em;margin:10px;margin-right:0;" onchange="updatePorts()"></select> -->
+          
+          </div>
+          <div id="input" style="float:left;"></div>
+          <div id="output" style="float:left;"></div>
+          <div id="drop" style="float:left;"></div>
+        </div>
+        <div id="row-3">
+          <div>
+            <label style="margin:10px;margin-right:0;">DPID</label>
+            <select id="row-3-dpid" style="width:12em;margin:10px;" onchange="update_flow_match()">
+              <option></option>
+            </select>
+            <!-- <select id="row-3-dpid" style="width:12em;margin:10px;" onchange="updatePorts()"></select> -->
+            
+          </div>
+          <div>
+            <label style="margin:10px;margin-right:0;">Flow Select</label>
+            <select id="flow-select" onchange="update_flow()">
+              <option>---------------------------Null---------------------------</option>
+            </select>
+          </div>
+          <div id="flow_byte" style="float:left;"></div>
+          <div id="flow_packet" style="float:left;"></div>
+          <!-- <div class="flow-detail" style="float:left;"></div> -->
+        </div>
+<div>
+  
+  <!-- <div id="line" style="float:left;" align=center></div> -->
+  <!-- <div style='float:left;width: 1px;height:600px ;border: 1px solid black'></div> -->
+  
+</div>
+  <!-- <div class="pure-controls" style="clear:both;">
+      <button href="#" class="pure-button pure-button-primary" onclick="setTap()">Set</button>
+      <button href="#" class="pure-button pure-button-primary" onclick="clearTap()">Clear</button>
+  </div> -->
+  <div id="post-status" style="clear:both;">
+  </div>
+</div><!-- main -->
+</div><!--layout -->
+<div class="footer" style="clear:both;">
+  <!-- <p class="legal-copyright">
+  © 2014 SDN Hub. All rights reserved.
+  </p> -->
+ <!--  <img style="float:right;" src="/web/img/logo.png"> -->
+</div>
+
+  <script src="/web/js/jquery.min.js"></script>
+  <script src="/web/js/highcharts.js"></script>
+  <script src="/web/js/traffic.js"></script>
+  <!-- <script src="/web/js/utils.js"></script> -->
+  <!-- <script src="/web/js/tap.js"></script> -->
+  </body>
+</html>

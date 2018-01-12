@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>SDN Hub starter kit</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/web/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/web/css/pure-min-0.5.0.css">
+    <link rel="stylesheet" href="/web/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/web/css/pure-custom.css">
+    <link rel="stylesheet" href="/web/css/joint.all.min.css">
+  </head>
+
+  <body>
+
+  <div class="header">
+      <div id="menu">
+      <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal pure-menu-fixed">
+          <!-- <img src="/web/img/logo.png" style="height:50px;float:left;width:180px;"> -->
+          <img src="/web/img/logo.png" style="height:40px;vertical-align:middle;">
+          <a class="pure-menu-heading" href="">同悦 SDN Starter Kit</a>
+          <!-- <div id="red"></div> -->
+      </div>
+  </div>
+  </div>
+
+  <div id="layout">
+  <div id="menu">
+      <div class="pure-menu pure-menu-open">
+          <ul>
+              <li class=" ">
+                  <a href="/web/index.html">Traffic
+                  <i class="fa fa-check-square-o"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/topo.html">Topology
+                  <i class="fa fa-home"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/stats.html">Statistics
+                  <i class="fa fa-bar-chart-o"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/tap.html">Manage Tap
+                  <i class="fa fa-edit"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/loadbalancer.html">Load balancer
+                  <i class="fa fa-sitemap"></i></a>
+              </li>
+              <li class="menu-item-divided pure-menu-selected">
+                  <a href="/web/firewall.html">Fire Wall
+                  <i class="fa fa-fire"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/security.html">Security
+                  <i class="fa fa-umbrella"></i></a>
+              </li>
+              
+          </ul>
+      </div>
+  </div>
+
+ <div id="main">
+        <h2>Fire Wall</h2>
+        <!-- <p>Following form allows configuring a stateless tap, i.e., once
+        you create the tap, you cannot track or delete that specific
+        tap. However, you can use the Set and Clear to achieve that effect.
+        Performing a "Clear" operation without specifying any field
+        values will remove all previously created Taps.
+        For this edition of the tap, the source and sink need to be on
+        the same switch.</p> -->
+        <hr />
+<div>
+  <form class="pure-form pure-form-aligned">
+      <fieldset>
+              <!-- <div class="pure-control-group">
+                  <label>Switch DPID</label>
+                  <select id="switch" style="width:12em;"
+                      onchange="updatePorts()">
+                  </select>
+              </div> -->
+              <div style="clear:both;">
+                <div style="float:left;">
+                  <div class="well" style="float:left;margin-right:10px;">
+                    <div class="pure-control-group">
+                        <label>Basic:</label>
+                    </div>
+                    <div class="pure-control-group">
+                        <label>Switch DPID</label>
+                        <select id="switch" style="width:12em;">
+                        </select>
+                    </div>
+                    <div class="pure-control-group">
+                        <label>Inport</label>
+                        <input id="inport" type="text">
+                    </div>
+
+                    <div class="pure-control-group">
+                        <label>Priority</label>
+                        <input id="pror" type="text" placeholder="0~65535">
+                    </div>
+                  </div>
+                  <div class="well" style="float:left;margin-right:10px;">
+                    <div class="pure-control-group">
+                        <label>Layer 2:</label>
+                    </div>
+                    <div class="pure-control-group">
+                        <label>DL_VLAN</label>
+                        <input id="vlan" type="text" placeholder="1~4094">
+                    </div>
+
+                    <div class="pure-control-group">
+                        <label>DL_SRC</label>
+                        <input id="dl_src" type="text" placeholder="01:12:23:34:45:56/01:12:23:34:45:56">
+                    </div>
+
+                    <div class="pure-control-group">
+                        <label>DL_DST</label>
+                        <input id="dl_dst" type="text" placeholder="01:12:23:34:45:56/01:12:23:34:45:56">
+                    </div>
+                  </div>
+                </div>
+                
+                <div style="float:left;">
+                  <div class="well" id="layer3_well" style="float:left;margin-right:10px;">
+                    <div class="pure-control-group">
+                        <label>Layer 3:</label>
+                    </div>
+                    <div class="pure-control-group">
+                        <label>ARP_SPA</label>
+                        <input id="arp_spq" type="text" placeholder="1.1.1.1/24 or 1.1.1.1/255.0.0.0">
+                    </div>
+
+                    <div class="pure-control-group">
+                        <label>ARP_TPA</label>
+                        <input id="arp_tpa" type="text" placeholder="1.1.1.1/24 or 1.1.1.1/255.0.0.0">
+                    </div>
+
+                    <div class="pure-control-group">
+                        <label>NW_SRC</label>
+                        <input id="nw_src" type="text" placeholder="1.1.1.1/24 or 1.1.1.1/255.0.0.0">
+                    </div>
+
+                    <div class="pure-control-group">
+                        <label>NW_DST</label>
+                        <input id="nw_dst" type="text" placeholder="1.1.1.1/24 or 1.1.1.1/255.0.0.0">
+                    </div>
+
+                    <div class="pure-control-group">
+                        <label>NW_PROTOCOL</label>
+                        <input id="nw_proto" type="text">
+                    </div>
+                  </div>
+                  <div class="well" id="layer4_well" style="float:left;margin-right:10px;">
+                    <div class="pure-control-group">
+                        <label>Layer 4:</label>
+                    </div>
+                    <div class="pure-control-group">
+                        <label>TP_SRC</label>
+                        <input id="tp_src" type="text" placeholder="0x03e8/0xfff8">
+                    </div>
+
+                    <div class="pure-control-group">
+                        <label>TP_DST</label>
+                        <input id="tp_dst" type="text" placeholder="0x03e8/0xfff8">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <script type="text/JavaScript"> 
+                document.getElementById("layer4_well").style.height = document.getElementById("layer3_well").offsetHeight + "px"; 
+              </script>
+              <div style="clear:both;">
+                <div class="pure-control-group">
+                    <label>Rules: </label>
+                    <input id="normal" type="checkbox">  Normal
+                    <input id="drop" type="checkbox">  Drop
+                </div>
+                <!-- <div class="pure-control-group">
+                    
+                </div> -->
+                <!-- <div class="pure-control-group">
+                    <label>Outport</label>
+                    <input id="outport" type="checkbox">
+                    <input id="outport_value" type="text">
+                </div>
+                <div class="pure-control-group">
+                    <label>Meter</label>
+                    <input id="meter" type="checkbox">
+                    <input id="meter_value" type="text">
+                </div>
+                <div class="pure-control-group">
+                    <label>Drop</label>
+                    <input id="drop" type="checkbox">
+                </div> -->
+              </div>
+              <div class="pure-controls" style="clear:both;margin-top:20px">
+                  <button href="#" class="pure-button pure-button-primary" onclick="setFirewall()">Set</button>
+                  <button href="#" class="pure-button pure-button-primary" onclick="clearFirewall()">Clear</button>
+              </div>
+      </fieldset>
+  </form>
+  <!-- <div id="line" style="float:left;" align=center></div> -->
+  <!-- <div style='float:left;width: 1px;height:600px ;border: 1px solid black'></div> -->
+</div>
+  <!-- <div class="pure-controls" style="clear:both;">
+      <button href="#" class="pure-button pure-button-primary" onclick="setTap()">Set</button>
+      <button href="#" class="pure-button pure-button-primary" onclick="clearTap()">Clear</button>
+  </div> -->
+  <div id="post-status" style="clear:both;">
+  </div>
+</div><!-- main -->
+</div><!--layout -->
+<div class="footer" style="clear:both;">
+  <!-- <p class="legal-copyright">
+  © 2014 SDN Hub. All rights reserved.
+  </p> -->
+</div>
+
+  <script src="/web/js/jquery.min.js"></script>
+  <script src="/web/js/highcharts.js"></script>
+  <script src="/web/js/utils.js"></script>
+  <script src="/web/js/tap.js"></script>
+  </body>
+</html>
