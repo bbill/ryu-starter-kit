@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SDN Hub starter kit</title>
+    <title>同悦 SDN starter kit</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="/web/css/pure-min-0.5.0.css">
@@ -21,8 +21,10 @@
   <div class="header">
       <div id="menu">
       <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal pure-menu-fixed">
-          <img src="/web/img/sdnhub_logo.png" style="height:40px;vertical-align:middle;">
-          <a class="pure-menu-heading" href="">SDN Hub Controller</a>
+          <!-- <img src="/web/img/logo.png" style="height:50px;float:left;width:180px;"> -->
+          <img src="/web/img/logo.png" style="height:40px;vertical-align:middle;">
+          <a class="pure-menu-heading" href="">同悦 SDN Starter Kit</a>
+          <!-- <div id="red"></div> -->
       </div>
   </div>
   </div>
@@ -32,7 +34,11 @@
       <div class="pure-menu pure-menu-open">
           <ul>
               <li class=" ">
-                  <a href="/web/index.html">Topology
+                  <a href="/web/index.html">Traffic
+                  <i class="fa fa-check-square-o"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/topo.html">Topology
                   <i class="fa fa-home"></i></a>
               </li>
               <li class=" ">
@@ -47,29 +53,54 @@
                   <a href="/web/loadbalancer.html">Load balancer
                   <i class="fa fa-sitemap"></i></a>
               </li>
+              <li class=" ">
+                  <a href="/web/firewall.html">Fire Wall
+                  <i class="fa fa-fire"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/security.html">Security
+                  <i class="fa fa-umbrella"></i></a>
+              </li>
  </ul>
  </div>
  </div>
 
  <div id="main">
         <h2>Load-balancer Configuration</h2>
-        <p>Following form allows create a pool for a stateless server
+        <!-- <p>Following form allows create a pool for a stateless server
         load-balancer that assigns each incoming request to
         a different server within the pool. Current implementation only
         allows a single server pool, and does not work in a network with
-        loops. Current implementation only load-balances TCP requests.</p>
+        loops. Current implementation only load-balances TCP requests.</p> -->
+        <hr />
 
 <form class="pure-form pure-form-aligned">
     <fieldset>
             <div class="pure-control-group">
+                <label>Switch DPID</label>
+                <select id="switch" style="width:12em;"></select>
+            </div>
+
+            <div class="pure-control-group">
                 <label>Virtual IP</label>
-                <input id="virtual-ip" type="text" placeholder="VIP" required>
+                <input id="virtual-ip" type="text" placeholder="Virtual IP" required>
+                <label>Physical Outport</label>
+                <input id="virtual-port" type="text">
+            </div>
+
+             <div class="pure-control-group">
+                <label>Server IP</label>
+                <input id="server-ip" type="text">
+                <label>Server Mac</label>
+                <input id="server-mac" type="text">
+                <label>Port</label>
+                <input id="server-port" type="text">
+                <button class="pure-button " id='add-button'>Add</button>
             </div>
 
             <div class="pure-control-group">
                 <label>Server pool</label>
-                <select id="servers" style="width:12em;" multiple>
-                </select>
+                <select id="servers" style="width:12em;" multiple></select>
             </div>
 
             <div class="pure-controls">
@@ -90,9 +121,9 @@
   </div><!-- main -->
   </div><!--layout -->
   <div class="footer">
-	  <p class="legal-copyright">
+	  <!-- <p class="legal-copyright">
 	  © 2014 SDN Hub. All rights reserved.
-	  </p>
+	  </p> -->
   </div>
 
   <script src="/web/js/jquery.min.js"></script>

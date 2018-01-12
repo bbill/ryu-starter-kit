@@ -28,10 +28,12 @@ from ryu.ofproto import ofproto_v1_3
 from ryu.lib import ofctl_v1_0
 from ryu.lib import ofctl_v1_3
 from ryu.app.wsgi import ControllerBase, WSGIApplication
-from ryu.app.sdnhub_apps import tap
+from ryu.app.tooyum import tap
 from ryu.ofproto import inet
 
-LOG = logging.getLogger('ryu.app.sdnhub_apps.tap_rest')
+from ryu.app.tooyum import database
+
+LOG = logging.getLogger('ryu.app.tooyum.tap_rest')
 
 # REST API
 #
@@ -68,7 +70,10 @@ class TapController(ControllerBase):
     def __init__(self, req, link, data, **config):
         super(TapController, self).__init__(req, link, data, **config)
         self.tap = data['tap']
+        LOG.error(data)
         self.tap.dpset = data['dpset']
+        self.database = database.Database()
+
 
     def is_filter_data_valid(self, filter_data):
         if 'sources' not in filter_data:
@@ -107,13 +112,13 @@ class TapController(ControllerBase):
                     if nw_proto != inet.IPPROTO_TCP and nw_proto != inet.IPPROTO_UDP:
                         LOG.error('Non TCP/UDP packet specifies TP fields')
                         return False
-
+                        
         return True
 
     def create_tap(self, req, **_kwargs):
         try:
             filter_data = eval(req.body)
-            print(filter_data)
+            print filter_data
             if not self.is_filter_data_valid(filter_data):
                 return Response(status=400)
         except SyntaxError:
@@ -121,6 +126,7 @@ class TapController(ControllerBase):
             return Response(status=400)
 
         if self.tap.create_tap(filter_data):
+            LOG.error('Invalid syntax %s', filter_data)
             return Response(status=200,content_type='application/json',
                     body=json.dumps({'status':'success'}))
         else:
@@ -128,16 +134,55 @@ class TapController(ControllerBase):
             return Response(status=501)
 
     def delete_tap(self, req, **_kwargs):
-        try:
-            filter_data = eval(req.body)
-            if not self.is_filter_data_valid(filter_data):
-                return Response(status=400)
-        except SyntaxError:
-            LOG.error('Invalid syntax %s', req.body)
-
-        self.tap.delete_tap(filter_data)
+	data=eval(req.body)
+        self.tap.delete_tap(data)
         return Response(status=200,content_type='application/json',
                     body=json.dumps({'status':'success'}))
+
+
+    def create_firewall(self, req, **_kwargs):
+        try:    
+            filter_data = eval(req.body)
+        except SyntaxError:
+            LOG.error('Invalid syntax %s', req.body)    
+        print filter_data
+        self.tap.create_firewall(filter_data)
+
+        return Response(status=200,content_type='application/json',
+                    body=json.dumps({'status':'success'}))
+
+    def clear_firewall(self, req, dpid,**_kwargs):
+
+       	self.tap.clear_firewall(dpid)
+        return Response(status=200,content_type='application/json',
+                    body=json.dumps({'status':'success'}))
+
+    def start_security(self, req, dpid,**_kwargs):
+
+       	self.tap.start_security(dpid)
+        return Response(status=200,content_type='application/json',
+                    body=json.dumps({'status':'success'}))
+
+
+    def stop_security(self, req, dpid,**_kwargs):
+
+       	self.tap.stop_security(dpid)
+        return Response(status=200,content_type='application/json',
+                    body=json.dumps({'status':'success'}))
+
+    def handle_security(self, req, dpid, mode, operation, **_kwargs):
+
+       	self.tap.handle_security(dpid,mode,operation)
+        return Response(status=200,content_type='application/json',
+                    body=json.dumps({'status':'success'}))
+
+
+    def get_security_info(self, req, dpid,**kwargs):
+        info = self.database.get_security_sta(dpid)
+        return Response(status=200,content_type='application/json',
+            body=json.dumps(info))
+
+
 
 class TapRestApi(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_0.OFP_VERSION,
@@ -169,3 +214,31 @@ class TapRestApi(app_manager.RyuApp):
         mapper.connect('tap', '/v1.0/tap/delete',
                        controller=TapController, action='delete_tap',
                        conditions=dict(method=['POST']))
+
+        mapper.connect('tap', '/v1.0/firewall/create',
+                       controller=TapController, action='create_firewall',
+                       conditions=dict(method=['POST']))
+
+        mapper.connect('tap', '/v1.0/firewall/clear/{dpid}',
+                       controller=TapController, action='clear_firewall',
+                       conditions=dict(method=['POST']))
+
+        mapper.connect('tap', '/v1.0/security/start/{dpid}',
+                       controller=TapController, action='start_security',
+                       conditions=dict(method=['POST']))
+	
+	mapper.connect('tap', '/v1.0/security/protect/{dpid}/{mode}/{operation}',
+                       controller=TapController, action='handle_security',
+                       conditions=dict(method=['POST']))
+
+        mapper.connect('tap', '/v1.0/security/stop/{dpid}',
+                       controller=TapController, action='stop_security',
+                       conditions=dict(method=['POST']))
+
+        mapper.connect('tap', '/v1.0/security/get/{dpid}',
+                       controller=TapController, action='get_security_info',
+                       conditions=dict(method=['GET']))
+
+
+
+

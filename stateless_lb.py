@@ -14,6 +14,7 @@
 import logging
 import json
 import random
+import ryu.utils
 
 from ryu.lib import mac as mac_lib
 from ryu.lib import ip as ip_lib
@@ -30,10 +31,11 @@ from ryu.lib.packet import arp
 from ryu.ofproto import ether, inet
 from ryu.ofproto import ofproto_v1_0, ofproto_v1_3
 from ryu.lib import dpid as dpid_lib
-from ryu.app.sdnhub_apps import learning_switch
+from ryu.app.tooyum import learning_switch
+from ryu.controller import dpset
 
 UINT32_MAX = 0xffffffff
-
+LOG = logging.getLogger('ryu.app.tooyum.stateless_lb')
 ################ Main ###################
 
 # The stateless server load balancer picks a different server for each
@@ -71,7 +73,7 @@ class StatelessLB(app_manager.RyuApp):
         self.learning_switch.clear_exemption()
         self.learning_switch.add_exemption({'dl_dst': self.virtual_mac})
 
-    # Users can skip doing header rewriting by setting the virtual IP
+    # Users can skip doing header rewriting by setting the virtual IP 
     # as an alias IP on all the servers. This works well in single subnet
     def set_rewrite_ip_flag(self, rewrite_ip):
         if rewrite_ip == 1:
@@ -84,6 +86,12 @@ class StatelessLB(app_manager.RyuApp):
 
     def set_server_pool(self, servers=None):
         self.servers = servers
+
+    def set_dpid(self, dpid=None):
+        self.input_dpid = dpid
+
+    def set_vport(self,vport=None):
+        self.vport = vport
 
     def formulate_arp_reply(self, dst_mac, dst_ip):
         if self.virtual_ip == None:
@@ -110,6 +118,64 @@ class StatelessLB(app_manager.RyuApp):
 
         return pkt
 
+    def create_group_lb(self, datapath):
+        buckets = []
+        if self.rewrite_ip_header:
+            for server in self.servers:
+                LOG.error(server)
+                actions = [datapath.ofproto_parser.OFPActionSetField(eth_dst=server['mac']),
+                       datapath.ofproto_parser.OFPActionSetField(ipv4_dst=server['ip']),
+                       datapath.ofproto_parser.OFPActionOutput(int(server['port']))]
+                LOG.error(int(server['port']))
+                #buckets = self.bucket_v12(datapath, action=actions)
+                buckets.extend(self.bucket_v12(datapath, action=actions))
+        else:
+            for server in self.servers:
+                actions = [datapath.ofproto_parser.OFPActionSetField(eth_dst=server.mac),
+                       datapath.ofproto_parser.OFPActionOutput(server.port)]
+                buckets = buckets.extend(self.bucket_v12(datapath, action=buckets))
+ 
+        #buckets = [datapath.ofproto_parser.OFPBucket(1, 0, 0,actions)]
+        self.group_v12(datapath, command=datapath.ofproto.OFPGC_DELETE, type_=datapath.ofproto.OFPGT_SELECT, groupid=100,buckets=[])
+        # group = datapath.ofproto_parser.OFPGroupMod(datapath=datapath,command=2,type_=datapath.ofproto.OFPGT_SELECT, group_id=100)
+        # datapath.send_msg(group)
+        self.group_v12(datapath, command=0, type_=datapath.ofproto.OFPGT_SELECT, groupid=100, buckets=buckets)
+ 
+ 
+    def bucket_v12(self, datapath, len_=0, weight=1, watch_port=0, watch_group=0,action=[]):
+        buckets = [datapath.ofproto_parser.OFPBucket(len_=len_, weight=weight, watch_port=watch_port,watch_group=watch_group, actions=action)]
+        return buckets
+ 
+    def group_v12(self, datapath, command=0, type_=0, groupid=0, buckets=None):
+        group = datapath.ofproto_parser.OFPGroupMod(datapath=datapath,command=command,type_=type_, group_id=groupid, buckets=buckets)
+        datapath.send_msg(group)
+
+
+
+    def install_lb_out2in_flow(self):
+        datapath = self.dpset.get(int(self.input_dpid,16))
+        LOG.error(datapath)
+        self.create_group_lb(datapath=datapath)
+        match = datapath.ofproto_parser.OFPMatch(eth_type=0x0800, ipv4_dst=self.virtual_ip)
+        actions = [datapath.ofproto_parser.OFPActionGroup(100)]
+        inst = [datapath.ofproto_parser.OFPInstructionActions(datapath.ofproto.OFPIT_WRITE_ACTIONS, actions)]
+        cookie = random.randint(0, 0xffffffffffffffff)
+        mod = datapath.ofproto_parser.OFPFlowMod(datapath=datapath, match=match, idle_timeout=10,
+                instructions=inst, cookie=cookie)
+        datapath.send_msg(mod)
+
+    def install_lb_in2out_flow(self):
+        datapath = self.dpset.get(int(self.input_dpid,16))
+        for serverIP in self.servers :
+            match = datapath.ofproto_parser.OFPMatch(eth_type=0x0800, ipv4_src=serverIP['ip'])
+            actions = [datapath.ofproto_parser.OFPActionSetField(ipv4_src=self.virtual_ip),
+                       datapath.ofproto_parser.OFPActionOutput(int(self.vport)) ]
+            inst = [datapath.ofproto_parser.OFPInstructionActions(datapath.ofproto.OFPIT_WRITE_ACTIONS, actions)]
+            cookie = random.randint(0, 0xffffffffffffffff)
+            mod = datapath.ofproto_parser.OFPFlowMod(datapath=datapath, match=match, idle_timeout=10,
+                instructions=inst, cookie=cookie)
+            datapath.send_msg(mod)
+
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def packet_in_handler(self, ev):
@@ -135,7 +201,7 @@ class StatelessLB(app_manager.RyuApp):
                         arp_hdr.src_ip)
 
                 actions = [ofp_parser.OFPActionOutput(in_port)]
-                out = ofp_parser.OFPPacketOut(datapath=datapath,
+                out = ofp_parser.OFPPacketOut(datapath=datapath, 
                            in_port=ofp.OFPP_ANY, data=reply_pkt.data,
                            actions=actions, buffer_id = UINT32_MAX)
                 datapath.send_msg(out)
@@ -150,11 +216,11 @@ class StatelessLB(app_manager.RyuApp):
 
         # Only handle traffic destined to virtual IP
         if (iphdr.dst != self.virtual_ip):
-            return
+            return 
 
         # Only handle TCP traffic
         if iphdr.proto != inet.IPPROTO_TCP:
-            return
+            return 
 
         tcphdr = pkt.get_protocols(tcp.tcp)[0]
 
@@ -177,11 +243,11 @@ class StatelessLB(app_manager.RyuApp):
         selected_server_mac = valid_servers[index]['mac']
         selected_server_outport = valid_servers[index]['outport']
         self.server_index += 1
-        print("Selected server %s" % selected_server_ip)
+        print "Selected server", selected_server_ip
 
         ########### Setup route to server
         match = ofp_parser.OFPMatch(in_port=in_port,
-                eth_type=eth.ethertype,  eth_src=eth.src,    eth_dst=eth.dst,
+                eth_type=eth.ethertype,  eth_src=eth.src,    eth_dst=eth.dst, 
                 ip_proto=iphdr.proto,    ipv4_src=iphdr.src, ipv4_dst=iphdr.dst,
                 tcp_src=tcphdr.src_port, tcp_dst=tcphdr.dst_port)
 
@@ -203,7 +269,7 @@ class StatelessLB(app_manager.RyuApp):
 
         ########### Setup reverse route from server
         match = ofp_parser.OFPMatch(in_port=selected_server_outport,
-                eth_type=eth.ethertype,  eth_src=selected_server_mac, eth_dst=eth.src,
+                eth_type=eth.ethertype,  eth_src=selected_server_mac, eth_dst=eth.src, 
                 ip_proto=iphdr.proto,    ipv4_src=selected_server_ip, ipv4_dst=iphdr.src,
                 tcp_src=tcphdr.dst_port, tcp_dst=tcphdr.src_port)
 
@@ -222,3 +288,4 @@ class StatelessLB(app_manager.RyuApp):
         mod = ofp_parser.OFPFlowMod(datapath=datapath, match=match, idle_timeout=10,
                 instructions=inst, cookie=cookie)
         datapath.send_msg(mod)
+

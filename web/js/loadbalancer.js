@@ -15,22 +15,55 @@
 
 var url = "http://" + location.hostname + ":8080";
 var hostList = {};
+var portList = {};
 
-function updateHosts() {
-    var serverSelect = document.getElementById("servers");
+// function updateHosts() {
+//     var serverSelect = document.getElementById("servers");
 
-	$.getJSON(url.concat("/v1.0/hosts"), function(hosts){
-	    $.each(hosts, function(key, value){
-            hostList[key] = value.mac
-            el = document.createElement("option");
-            el.textContent = key;
-            el.value = key;
-            serverSelect.appendChild(el);
+// 	$.getJSON(url.concat("/v1.0/hosts"), function(hosts){
+// 	    $.each(hosts, function(key, value){
+//             hostList[key] = value.mac
+//             el = document.createElement("option");
+//             el.textContent = key;
+//             el.value = key;
+//             serverSelect.appendChild(el);
+//         });
+//     });
+// }
+    
+// updateHosts();
+function updateSwitchList() {
+    var switchSelect = document.getElementById("switch");
+    $.getJSON(url.concat("/v1.0/topology/switches"), function(switches){
+        $.each(switches, function(index, value){
+            var el = document.createElement("option");
+            el.textContent = value.dpid;
+            el.value = value.dpid;
+            switchSelect.appendChild(el);
         });
     });
 }
+updateSwitchList();
+
+$(document).on("click",'#add-button',function(event){
+    // addHosts();
+    event.preventDefault();
+
+    var key = $('#server-ip').val().toString();
     
-updateHosts();
+    hostList[key] = $('#server-mac').val().toString();
+    portList[key] = $('#server-port').val().toString();
+    $('#servers').append('<option>'+key+'</option>');
+　　
+    $('#server-ip').val('');
+    $('#server-mac').val('');
+    $('#server-port').val('');
+
+　　
+});
+
+
+
 
 /* Format of the POST data is as follows:
 
@@ -42,7 +75,9 @@ updateHosts();
 
 function makePostData() {
     var vip = $('#virtual-ip').val();
+    var vport = $('#virtual-port').val();
     var servers = $('#servers').val();
+    var dpid = $('#switch').val();
     var rewriteIP = $('#rewrite-ip').is(':checked');
     var lbConfig = {};
     lbConfig['servers'] = [];
@@ -50,10 +85,13 @@ function makePostData() {
     if (servers != undefined) {
         for (i=0; i<servers.length;i++) {
             var server = servers[i];
-            lbConfig['servers'].push({'ip': server, 'mac': hostList[server]});
+            lbConfig['servers'].push({'ip': server, 'mac': hostList[server], 'port': portList[server]});
         }
     }
     lbConfig['virtual_ip'] = vip;
+    lbConfig['physical_port'] = vport;
+    lbConfig['dpid'] = dpid;
+
 
     if (rewriteIP) 
         lbConfig['rewrite_ip'] = 1;

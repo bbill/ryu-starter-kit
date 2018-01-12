@@ -21,8 +21,10 @@
   <div class="header">
       <div id="menu">
       <div class="home-menu pure-menu pure-menu-open pure-menu-horizontal pure-menu-fixed">
-          <img src="/web/img/sdnhub_logo.png" style="height:40px;vertical-align:middle;">
-          <a class="pure-menu-heading" href="">SDN Hub Controller</a>
+          <!-- <img src="/web/img/logo.png" style="height:50px;float:left;width:180px;"> -->
+          <img src="/web/img/logo.png" style="height:40px;vertical-align:middle;">
+          <a class="pure-menu-heading" href="">同悦 SDN Starter Kit</a>
+          <!-- <div id="red"></div> -->
       </div>
   </div>
   </div>
@@ -32,7 +34,11 @@
       <div class="pure-menu pure-menu-open">
           <ul>
               <li class=" ">
-                  <a href="/web/index.html">Topology
+                  <a href="/web/index.html">Traffic
+                  <i class="fa fa-check-square-o"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/topo.html">Topology
                   <i class="fa fa-home"></i></a>
               </li>
               <li class=" ">
@@ -47,94 +53,161 @@
                   <a href="/web/loadbalancer.html">Load balancer
                   <i class="fa fa-sitemap"></i></a>
               </li>
- </ul>
- </div>
- </div>
+              <li class=" ">
+                  <a href="/web/firewall.html">Fire Wall
+                  <i class="fa fa-fire"></i></a>
+              </li>
+              <li class=" ">
+                  <a href="/web/security.html">Security
+                  <i class="fa fa-umbrella"></i></a>
+              </li>
+              
+          </ul>
+      </div>
+  </div>
 
  <div id="main">
         <h2>Manage Tap</h2>
-        <p>Following form allows configuring a stateless tap, i.e., once
+        <!-- <p>Following form allows configuring a stateless tap, i.e., once
         you create the tap, you cannot track or delete that specific
         tap. However, you can use the Set and Clear to achieve that effect.
         Performing a "Clear" operation without specifying any field
         values will remove all previously created Taps.
         For this edition of the tap, the source and sink need to be on
-        the same switch.</p>
+        the same switch.</p> -->
+        <!-- <hr /> -->
+<div>
+  <form class="pure-form pure-form-aligned">
+      <fieldset id="input-table">
+              <div class="pure-control-group">
+                  <label>Switch DPID</label>
+                  <select id="switch" style="width:12em;"
+                      onchange="updatePorts()">
+                  </select>
+              </div>
 
-<form class="pure-form pure-form-aligned">
-    <fieldset>
-            <div class="pure-control-group">
-                <label>Switch DPID</label>
-                <select id="switch" style="width:12em;"
-                    onchange="updatePorts()">
-                </select>
-            </div>
+              <div class="pure-control-group">
+                  <label>Source Port(s)</label>
+                  <select id="src-ports" style="width:12em;" multiple>
+                  </select>
+              </div>
 
-            <div class="pure-control-group">
-                <label>Source port(s)</label>
-                <select id="src-ports" style="width:12em;" multiple>
-                </select>
-            </div>
+              <div class="pure-control-group">
+                  <label>MAC Address</label>
+                  <select id="mac-class">
+                      <option>--Ignore--</option>
+                      <option>Source</option>
+                      <option>Destination</option>
+                      <!-- <option>Src or Dest</option> -->
+                  </select>
+                  <input id="mac-addr" type="text"
+                  placeholder="01:12:23:34:45:56">
+              </div>
 
-            <div class="pure-control-group">
-                <label>Sink port(s)</label>
-                <select id="sink-ports" style="width:12em;" multiple>
-                </select>
-            </div>
+              <div class="pure-control-group">
+                  <label>IP Address</label>
+                  <select id="ip-class">
+                      <option>--Ignore--</option>
+                      <option>Source</option>
+                      <option>Destination</option>
+                      <!-- <option>Src or Dest</option> -->
+                  </select>
+                  <input id="ip-addr" type="text"
+                  placeholder="12.23.34.45/24">
+              </div>
 
-            <div class="pure-control-group">
-                <label>MAC address</label>
-                <select id="mac-class">
-                    <option>--Ignore--</option>
-                    <option>Source</option>
-                    <option>Destination</option>
-                    <option>Src or Dest</option>
-                </select>
-                <input id="mac-addr" type="text"
-                placeholder="01:12:23:34:45:56">
-            </div>
+              <!-- <div class="pure-control-group">
+                  <label>TP_src</label>
+                  <input id="tp_src" type="text">
+              </div>
 
-            <div class="pure-control-group">
-                <label>IP address</label>
-                <select id="ip-class">
-                    <option>--Ignore--</option>
-                    <option>Source</option>
-                    <option>Destination</option>
-                    <option>Src or Dest</option>
-                </select>
-                <input id="ip-addr" type="text"
-                placeholder="12.23.34.45/24">
-            </div>
+              <div class="pure-control-group">
+                  <label>TP_dst</label>
+                  <input id="tp_dst" type="text">
+              </div> -->
+              <div class="pure-control-group">
+                  <label>L4 Port</label>
+                  <select id="l4-class">
+                      <option>--Ignore--</option>
+                      <option>tp_src</option>
+                      <option>tp_dst</option>
+                      <!-- <option>Src or Dest</option> -->
+                  </select>
+                  <input id="l4-port" type="text">
+              </div>
 
-            <div class="pure-control-group">
-                <!--<div class="pure-u-1 pure-u-md-1-3">-->
-                <label>Common traffic types</label>
-                <select id="traffic-type"> 
-                    <option>--Ignore--</option>
-                    <option>HTTP</option>
-                    <option>HTTPS</option>
-                    <option>UDP</option>
-                    <option>DHCP</option>
-                    <option>ICMP</option>
-                </select>
-            </div>
-    </fieldset>
-</form>
-            <div class="pure-controls">
-                <button href="#" class="pure-button pure-button-primary" onclick="setTap()">Set</button>
-                <button href="#" class="pure-button pure-button-primary" onclick="clearTap()">Clear</button>
-            </div>
-    <div id="post-status">
-    </div>
-  </div><!-- main -->
-  </div><!--layout -->
-  <div class="footer">
-	  <p class="legal-copyright">
-	  © 2014 SDN Hub. All rights reserved.
-	  </p>
+
+
+
+              <div class="pure-control-group">
+                  <!--<div class="pure-u-1 pure-u-md-1-3">-->
+                  <label>Common Traffic Types</label>
+                  <select id="traffic-type"> 
+                      <option>--Ignore--</option>
+                      <option>HTTP</option>
+                      <option>HTTPS</option>
+                      <option>UDP</option>
+                      <option>DHCP</option>
+                      <option>ICMP</option>
+                  </select>
+              </div>
+
+              <!-- <div class="pure-control-group">
+                  <label>VXLAN VNI</label>
+                  <input id="vni" type="text">
+              </div> -->
+
+              <div class="pure-control-group">
+                  <label>User Define Filter</label>
+                  <input id="udf-0" type="text" placeholder="UDF0">
+                  <input id="udf-1" type="text" placeholder="UDF1">
+                  <input id="udf-2" type="text" placeholder="UDF2">
+                  <input id="udf-3" type="text" placeholder="UDF3">
+              </div>
+
+              <div class="pure-control-group">
+                  <label>Output Port(s)</label>
+                  <select id="sink-ports" style="width:12em;" multiple>
+                    <option>Normal</option>
+                  </select>
+              </div>
+
+              <div class="pure-control-group">
+                  <label>Qos</label>
+                  <input id="meter_id" type="text" placeholder="meter id">
+                  <input id="meter_rate" type="text" placeholder="meter rate (KBPS)">
+              </div>
+
+              <div class="pure-control-group">
+                  <label>Other Actions</label>
+                  <input id="other" type="text">
+              </div>
+              <div class="pure-controls" style="clear:both;">
+                  <button href="#" class="pure-button pure-button-primary" onclick="setTap()">Set</button>
+                  <button href="#" class="pure-button pure-button-primary" onclick="clearTap()">Clear</button>
+              </div>
+      </fieldset>
+  </form>
+  <!-- <div id="line" style="float:left;" align=center></div> -->
+  <!-- <div style='float:left;width: 1px;height:600px ;border: 1px solid black'></div> -->
+</div>
+  <!-- <div class="pure-controls" style="clear:both;">
+      <button href="#" class="pure-button pure-button-primary" onclick="setTap()">Set</button>
+      <button href="#" class="pure-button pure-button-primary" onclick="clearTap()">Clear</button>
+  </div> -->
+  <div id="post-status" style="clear:both;">
   </div>
+</div><!-- main -->
+</div><!--layout -->
+<div class="footer" style="clear:both;">
+  <!-- <p class="legal-copyright">
+  © 2014 SDN Hub. All rights reserved.
+  </p> -->
+ <!--  <img style="float:right;" src="/web/img/logo.png"> -->
+</div>
 
   <script src="/web/js/jquery.min.js"></script>
+  <script src="/web/js/highcharts.js"></script>
   <script src="/web/js/utils.js"></script>
   <script src="/web/js/tap.js"></script>
   </body>

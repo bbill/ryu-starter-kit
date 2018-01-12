@@ -40,7 +40,7 @@ from ryu.lib.packet import ethernet
 from ryu.lib.packet import ipv4
 from ryu.ofproto import ether
 from ryu.ofproto import ofproto_v1_0, ofproto_v1_3
-from ryu.app.sdnhub_apps import host_tracker
+from ryu.app.tooyum import host_tracker
 from ryu.lib import dpid as dpid_lib
 
 class HostTrackerController(ControllerBase):
@@ -62,7 +62,7 @@ class HostTrackerController(ControllerBase):
             return Response(status=404)
 
         switch_hosts = {}
-        for key,val in self.host_tracker.hosts.items():
+        for key,val in self.host_tracker.hosts.iteritems():
             if val['dpid']== dpid_lib.dpid_to_str(dp.id):
                 switch_hosts[key] = val
 

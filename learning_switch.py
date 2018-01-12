@@ -30,7 +30,7 @@ from ryu.lib.packet import arp
 DEFAULT_IDLE_TIMEOUT = 60
 DEFAULT_HARD_TIMEOUT = 300
 
-LOG = logging.getLogger('ryu.app.sdnhub_apps.learning_switch')
+LOG = logging.getLogger('ryu.app.tooyum.learning_switch')
 
 class L2LearningSwitch(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -65,7 +65,7 @@ class L2LearningSwitch(app_manager.RyuApp):
     def is_packet_exempted(self, pkt):
         fields = {}
         eth = pkt.get_protocols(ethernet.ethernet)[0]
-
+        
         fields['dl_src'] = eth.src
         fields['dl_dst'] = eth.dst
         fields['dl_type'] = eth.ethertype
@@ -89,13 +89,13 @@ class L2LearningSwitch(app_manager.RyuApp):
                 tcp_hdr = pkt.get_protocols(tcp.tcp)[0]
                 fields['tp_src'] = tcp_hdr.src_port
                 fields['tp_dst'] = tcp_hdr.dst_port
-
+        
         for match in self.exemption:
             # the match specified for exemption should be a
-            # superset of the flows to exclude processing.
+            # superset of the flows to exclude processing. 
             superset = True
 
-            for key,val in match.items():
+            for key,val in match.iteritems():
                 if key not in fields:
                     superset = False
                     break
@@ -106,7 +106,7 @@ class L2LearningSwitch(app_manager.RyuApp):
             # This exemption rule matched
             if superset:
                 return True
-
+        
 
     def add_flow(self, datapath, priority=ofproto_v1_3.OFP_DEFAULT_PRIORITY, match=None,
                   actions=None,idle_timeout=0, hard_timeout=0, buffer_id=ofproto_v1_3.OFP_NO_BUFFER):
@@ -154,7 +154,8 @@ class L2LearningSwitch(app_manager.RyuApp):
             # install table-miss flow entry
             match = ofp_parser.OFPMatch()
             actions = [ofp_parser.OFPActionOutput(ofp.OFPP_CONTROLLER, ofp.OFPCML_NO_BUFFER)]
-            self.add_flow(datapath=datapath, priority=0, match=match, actions=actions)
+            # prohibit the flow go to controller
+	    self.add_flow(datapath=datapath, priority=0, match=match, actions=actions)
 
         elif ev.state == DEAD_DISPATCHER:
             if datapath.id != None:
@@ -197,7 +198,7 @@ class L2LearningSwitch(app_manager.RyuApp):
         # actions = [ofp_parser.OFPActionOutput(in_port)]
         # match = ofp_parser.OFPMatch(eth_dst=src)
         # self.add_flow(datapath=datapath, priority=1,
-        #              match=match, actions=actions)
+        #              match=match, actions=actions) 
 
         # Learning switch logic below
         if dst in self.mac_to_port[dpid]:
@@ -251,3 +252,4 @@ class L2LearningSwitch(app_manager.RyuApp):
             del self.switch_flows[dpid][index_to_delete]
             LOG.debug("Flow removed on switch %d: match=%s, cookie=%s",
                     dpid, match_str, cookie)
+

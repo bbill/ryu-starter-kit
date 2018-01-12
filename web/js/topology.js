@@ -24,21 +24,21 @@ var erd = joint.shapes.erd;
 var element = function(elm, x, y, label) {
     var cell = new elm({ position: { x: x, y: y }, size: { width: 150, height: 30 },
 	      attrs: { text: { text: label }}});
-
-  	cell.attr({
+	
+	cell.attr({
 		  rect: { fill: '#2C3E50', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black' },
 	      text: {
 	          fill: 'white',
 	          'font-size': 16, 'font-weight': 'bold', 'font-variant': 'small-caps', 'text-transform': 'capitalize'
 	      }
 	  });
+	
     graph.addCell(cell);
     return cell;
 };
 
 var link = function(elm1, elm2) {
-
-    var cell = new erd.Line({ source: { id: elm1.id }, target: { id: elm2.id },
+    var cell = new erd.Line({ source: { id: elm1.id }, target: { id: elm2.id }, 
         attrs : { '.connection': { stroke: 'blue' } },
         labels: [{ text: {'font-size': 10 } },
                  { text: {'font-size': 10 } }]
@@ -53,12 +53,11 @@ var link = function(elm1, elm2) {
 };
 
 var getSwitchDesc = function(dpid) {
-    var ofctl_dpid = parseInt(dpid, 16);
-    $.getJSON(url.concat("/stats/desc/").concat(ofctl_dpid), function(descs){
+    /*var ofctl_dpid = parseInt(dpid, 16);*/
+    $.getJSON(url.concat("/stats/desc/").concat(dpid), function(descs){
 	    $.each(descs, function(key, value){
             var valueJson = JSON.stringify(value);
             var switchDesc = JSON.parse(valueJson);
-
             switchList[dpid]['desc'] = switchDesc;
         });
     }).then(setSwitchTooltip);
@@ -80,7 +79,7 @@ var setSwitchTooltip = function() {
         if (rectDom != undefined && value.desc != undefined) {
             value['tooltip'] = new joint.ui.Tooltip({
                     target: rectDom,
-                    content: '<span>Switch ' + value['name'] + '</span>' +
+                    content: '<span>Switch ' + value['name'] + '</span>' + 
                              '<hr><table>' +
                              '<tr><td>H/w type:</td><td>' + value.desc.hw_desc + '</td></tr>' +
                              '<tr><td>S/w version:</td><td>' + value.desc.sw_desc + '</td></tr>' +
@@ -109,7 +108,7 @@ var hostCleanup = function(currentHosts) {
 };
 
 var drawHosts = function() {
-	srcSwitch = {};
+	srcSwitch = {}; 
 	dstSwitch = {};
 
 	$.getJSON(url.concat("/v1.0/hosts"), function(hosts){

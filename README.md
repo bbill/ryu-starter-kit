@@ -1,6 +1,7 @@
 SDN Starter Kit 
 ===============
 
+
 This software package is offered to promote SDN trial and adoption in
 smaller proof-of-concept deployments. The applications are built over
 the [Ryu](http://osrg.github.io/ryu/) controller platform.
@@ -74,4 +75,10 @@ is Srini Seetharaman (srini.seetharaman@gmail.com)
 # Support/discussion forum
 
 (http://sdnhub.org/forums/forum/solution-suite/ryu-sdn-starter-kit/)
+
+# 补充说明
+
+以上内容为原作者发布，我们希望通过对这个项目的修改，可以用来帮助做一些
+SDN 教学。
+
 

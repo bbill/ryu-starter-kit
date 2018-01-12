@@ -21,17 +21,16 @@ function updatePortStats() {
             statsTableBody.removeChild(statsTableBody.firstChild);
     }
 
-    $.getJSON(url.concat("/stats/switches"), function(switches){
-        $.each(switches, function(index, dpid){
-            var hex_dpid = parseInt(dpid).toString(16);
 
+    $.getJSON(url.concat("/stats/switches"), function(switches){
+        $.each(switches, function(index,  dpid){
             $.getJSON(url.concat("/stats/port/").concat(dpid), function(ports) {
                 var portStats = ports[dpid];
-
+                
                 var tr = document.createElement('TR');
                 var physicalPorts = 0;
                 var switchColTd = document.createElement('TD');
-                switchColTd.appendChild(document.createTextNode(hex_dpid));
+                switchColTd.appendChild(document.createTextNode(dpid));
                 tr.appendChild(switchColTd);
 
                 $.each(portStats, function(index, obj) {

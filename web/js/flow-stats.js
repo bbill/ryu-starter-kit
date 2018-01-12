@@ -31,7 +31,7 @@ function updateFlowStats() {
                 var tr = document.createElement('TR');
                 var numFlows = 0;
                 var switchColTd = document.createElement('TD');
-                switchColTd.appendChild(document.createTextNode(hex_dpid));
+                switchColTd.appendChild(document.createTextNode(dpid));
                 tr.appendChild(switchColTd);
 
                 var td;

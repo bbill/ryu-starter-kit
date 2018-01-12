@@ -28,10 +28,10 @@ from ryu.ofproto import ofproto_v1_3
 from ryu.lib import ofctl_v1_0
 from ryu.lib import ofctl_v1_3
 from ryu.app.wsgi import ControllerBase, WSGIApplication
-from ryu.app.sdnhub_apps import stateless_lb, learning_switch
+from ryu.app.tooyum import stateless_lb, learning_switch
 from ryu.ofproto import inet
 
-LOG = logging.getLogger('ryu.app.sdnhub_apps.stateless_lb_rest')
+LOG = logging.getLogger('ryu.app.tooyum.stateless_lb_rest')
 
 # REST API
 #
@@ -66,7 +66,10 @@ class StatelessLBController(ControllerBase):
     def __init__(self, req, link, data, **config):
         super(StatelessLBController, self).__init__(req, link, data, **config)
         self.stateless_lb = data['stateless_lb']
-        self.stateless_lb.set_learning_switch(data['learning_switch'])
+        LOG.error(data)
+        self.stateless_lb.dpset = data['dpset']
+
+        # self.stateless_lb.set_learning_switch(data['learning_switch'])
 
     def is_config_data_valid(self, lb_config):
         if not is_ip_valid(lb_config['virtual_ip']):
@@ -80,11 +83,20 @@ class StatelessLBController(ControllerBase):
         try:
             lb_config = eval(req.body)
             if not self.is_config_data_valid(lb_config):
+                LOG.error("-------------------------11111111111")
                 return Response(status=400)
+
 
             self.stateless_lb.set_virtual_ip(lb_config['virtual_ip'])
             self.stateless_lb.set_server_pool(lb_config['servers'])
             self.stateless_lb.set_rewrite_ip_flag(lb_config['rewrite_ip'])
+            self.stateless_lb.set_dpid(lb_config['dpid'])
+            self.stateless_lb.set_vport(lb_config['physical_port'])
+            LOG.error("-------------------------222222222222")
+            # datapath = self.dpset.get(int(lb_config['servers']['input_dpid'],16))
+            # LOG.error(datapath)
+            self.stateless_lb.install_lb_out2in_flow()
+            self.stateless_lb.install_lb_in2out_flow()
 
         except SyntaxError:
             LOG.error('Invalid syntax %s', req.body)
@@ -96,7 +108,7 @@ class StatelessLBController(ControllerBase):
     def delete_loadbalancer(self, req, **_kwargs):
         try:
             lb_config = eval(req.body)
-            print(lb_config)
+            print lb_config
             if not self.is_config_data_valid(lb_config):
                 return Response(status=400)
 
@@ -115,6 +127,7 @@ class StatelessLBRestApi(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_0.OFP_VERSION,
                     ofproto_v1_3.OFP_VERSION]
     _CONTEXTS = {
+        'dpset': dpset.DPSet,
         'wsgi': WSGIApplication,
         'stateless_lb': stateless_lb.StatelessLB,
         'learning_switch': learning_switch.L2LearningSwitch
@@ -122,6 +135,7 @@ class StatelessLBRestApi(app_manager.RyuApp):
 
     def __init__(self, *args, **kwargs):
         super(StatelessLBRestApi, self).__init__(*args, **kwargs)
+        self.dpset = kwargs['dpset']
         stateless_lb = kwargs['stateless_lb']
         learning_switch = kwargs['learning_switch']
         wsgi = kwargs['wsgi']
@@ -130,6 +144,8 @@ class StatelessLBRestApi(app_manager.RyuApp):
         self.data['waiters'] = self.waiters
         self.data['stateless_lb'] = stateless_lb
         self.data['learning_switch'] = learning_switch
+
+        self.data['dpset'] = self.dpset
 
         wsgi.registory['StatelessLBController'] = self.data
         mapper = wsgi.mapper
@@ -141,3 +157,5 @@ class StatelessLBRestApi(app_manager.RyuApp):
         mapper.connect('loadbalancer', '/v1.0/loadbalancer/delete',
                        controller=StatelessLBController, action='delete_loadbalancer',
                        conditions=dict(method=['POST']))
+
+
