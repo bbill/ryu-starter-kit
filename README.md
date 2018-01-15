@@ -82,19 +82,19 @@ is Srini Seetharaman (srini.seetharaman@gmail.com)
 SDN 教学。
 
 
-** 怎样使用
-*** 安装RYU控制器
+* **怎样使用**
+* ***安装RYU控制器***
 
     可以执行
     wget -O - https://raw.githubusercontent.com/bbill/ryuInstallHelper/master/ryuInstallHelper.sh |bash
     
-*** 安装 RYU Starter Kit
+* ***安装 RYU Starter Kit***
 
     wget -O - https://raw.githubusercontent.com/bbill/ryu-starter-kit/master/install.sh  |bash
 
     在提示设定 mysql root 密码时，请设置为 pswdtooyum.
 
-*** 运行
+* ***运行***
     bash ~/ryu/ryu/app/tooyum/run_tooyum_sdn_demo.sh
     
     通过浏览器访问 http://locahost:8080
