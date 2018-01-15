@@ -76,9 +76,35 @@ is Srini Seetharaman (srini.seetharaman@gmail.com)
 
 (http://sdnhub.org/forums/forum/solution-suite/ryu-sdn-starter-kit/)
 
-# 补充说明
+* 补充说明
 
 以上内容为原作者发布，我们希望通过对这个项目的修改，可以用来帮助做一些
 SDN 教学。
+
+
+** 怎样使用
+*** 安装RYU控制器
+
+    可以执行
+    wget -O - https://raw.githubusercontent.com/bbill/ryuInstallHelper/master/ryuInstallHelper.sh |bash
+    
+*** 安装 RYU Starter Kit
+
+    wget -O - https://raw.githubusercontent.com/bbill/ryu-starter-kit/master/install.sh  |bash
+
+    在提示设定 mysql root 密码时，请设置为 pswdtooyum.
+
+*** 运行
+    bash ~/ryu/ryu/app/tooyum/run_tooyum_sdn_demo.sh
+    
+    通过浏览器访问 http://locahost:8080
+
+
+
+
+
+
+
+    
 
 
