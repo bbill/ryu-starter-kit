@@ -76,7 +76,7 @@ is Srini Seetharaman (srini.seetharaman@gmail.com)
 
 (http://sdnhub.org/forums/forum/solution-suite/ryu-sdn-starter-kit/)
 
-* 补充说明
+# 补充说明
 
 以上内容为原作者发布，我们希望通过对这个项目的修改，可以用来帮助做一些
 SDN 教学。
